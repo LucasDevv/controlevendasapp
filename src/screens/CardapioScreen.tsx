@@ -51,7 +51,7 @@ const CardapioScreen = () => {
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.surface} />
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <Appbar.Header>
           <Appbar.Content title="Cardápio" titleStyle={{ color: theme.colors.onPrimary }} />
         </Appbar.Header>

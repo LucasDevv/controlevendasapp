@@ -5,12 +5,13 @@ import { Produto } from '../models/Produto';
 
 interface Props {
   produto: Produto;
+  quantidade?: number; // Nova propriedade opcional para a quantidade
   onEditPress?: (produto: Produto) => void;
   onDeletePress?: (id: string) => void;
   isCardapio?: boolean;
 }
 
-const ProdutoCard: React.FC<Props> = ({ produto, onEditPress, onDeletePress, isCardapio = false }) => {
+const ProdutoCard: React.FC<Props> = ({ produto, quantidade, onEditPress, onDeletePress, isCardapio = false }) => {
   const theme = useTheme();
 
   return (
@@ -48,19 +49,12 @@ const ProdutoCard: React.FC<Props> = ({ produto, onEditPress, onDeletePress, isC
           <Text style={{ color: theme.colors.onPrimary }}>Imagem não disponível</Text>
         )}
         <Text style={{ color: theme.colors.onPrimary, marginTop: 8 }}>
-          Descrição: {produto.descricao}
+          Preço: R$ {produto.preco.toFixed(2)}
         </Text>
-        <Text style={{ color: theme.colors.onPrimary }}>Preço: R$ {produto.preco.toFixed(2)}</Text>
-        {!isCardapio && (
-          <>
-            <Text style={{ color: theme.colors.onPrimary }}>Categoria: {produto.categoria}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ color: theme.colors.onPrimary }}>Estoque: {produto.estoque}</Text>
-              {produto.estoque <= 5 && (
-                <IconButton size={15} iconColor={theme.colors.primary} icon="alert" />
-              )}
-            </View>
-          </>
+        {quantidade && (
+          <Text style={[styles.quantidade, { color: theme.colors.primary }]}>
+            Quantidade: {quantidade}
+          </Text>
         )}
       </Card.Content>
     </Card>
@@ -68,15 +62,10 @@ const ProdutoCard: React.FC<Props> = ({ produto, onEditPress, onDeletePress, isC
 };
 
 const styles = StyleSheet.create({
-  card: { margin: 8, marginLeft: 18, marginRight: 18, minWidth: 200 },
+  card: { margin: 8, marginLeft: 18, marginRight: 18, minWidth: 200 , minHeight: 300},
   actionIcons: { flexDirection: 'row' },
-  image: {
-    width: '100%',
-    height: 150,
-    resizeMode: 'cover',
-    borderRadius: 8,
-    marginVertical: 8,
-  },
+  image: { width: '100%', height: 150, resizeMode: 'cover', borderRadius: 8, marginVertical: 8 },
+  quantidade: { position: 'absolute', bottom: 5, right: 5, fontWeight: 'bold' },
 });
 
 export default ProdutoCard;
