@@ -40,7 +40,6 @@ const CadastroProdutosScreen = () => {
     try {
       setIsLoading(true);
       const produtosData: Produto[] = await getProdutos();
-      console.log("todos produtos: ", produtosData);
       setProdutos(produtosData);
     } catch (error) {
       setSnackbarMessage('Erro ao obter produtos: ' + error);
@@ -59,7 +58,6 @@ const CadastroProdutosScreen = () => {
         await updateProduto(produto, imageUri);
       } else {
         // Cria um novo produto
-        console.log("testeaimgem: ", produto.imagemUrl!);
         await createProduto(produto!);
       }
 

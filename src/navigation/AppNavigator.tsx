@@ -8,6 +8,7 @@ import CarrinhoScreen from '../screens/CarrinhoScreen';
 import LoginScreen from '../screens/LoginScreen';
 import CadastroProdutosScreen from '../screens/CadastroProdutosScreen';
 import { MaterialIcons } from '@expo/vector-icons';
+import PedidosScreen from '../screens/PedidosScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,10 +33,38 @@ const ClienteStack = () => (
   </Tab.Navigator>
 );
 
+const AdminTabs = () => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ color, size }) => {
+        const iconName: string =
+          route.name === 'CadastroProdutos' ? 'add-box' :
+          route.name === 'Pedidos' ? 'pending-actions' :
+          'help-outline';
+
+        return <MaterialIcons name={iconName as keyof typeof MaterialIcons.glyphMap} size={size} color={color} />;
+      },
+      tabBarActiveTintColor: '#FF9A3E',
+      tabBarInactiveTintColor: 'gray',
+    })}
+  >
+    <Tab.Screen
+      name="CadastroProdutos"
+      component={CadastroProdutosScreen}
+      options={{ headerShown: false, title: 'Cadastro' }}
+    />
+    <Tab.Screen
+      name="Pedidos"
+      component={PedidosScreen}
+      options={{ headerShown: false, title: 'Pedidos' }}
+    />
+  </Tab.Navigator>
+);
+
 const AdminStack = () => (
   <Stack.Navigator>
     <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
-    <Stack.Screen name="CadastroProdutosScreen" component={CadastroProdutosScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="AdminTabs" component={AdminTabs} options={{ headerShown: false }} />
   </Stack.Navigator>
 );
 

@@ -63,8 +63,6 @@ const ProdutoForm: React.FC<Props> = ({ visible, onDismiss, onSave, produto }) =
       setSnackbarVisible(true);
       return;
     }
-    console.log("PRODUTO: ", produto);
-    console.log("idProduto: ", produto?.id);
     const newProduto: Produto = {
       ...(produto?.id && { id: produto.id }), // Inclui o ID apenas se o produto existir
       nome,
@@ -75,13 +73,11 @@ const ProdutoForm: React.FC<Props> = ({ visible, onDismiss, onSave, produto }) =
       imagemUrl: produto ? produto.imagemUrl : imagemUrl, // Mantém a URL antiga para atualização
     };
 
-    console.log("NEWPRODUTO: ", newProduto);
   
     if (produto) {
       // Atualização: envia o produto com imagem antiga e a nova imagem
       onSave(newProduto, imagemUrl); // `imagemUrl` será a nova imagem se selecionada
     } else {
-      console.log("onsave: ", );
       onSave(newProduto); // `imagemUrl` já será parte do produto
     }
   };
@@ -96,7 +92,6 @@ const ProdutoForm: React.FC<Props> = ({ visible, onDismiss, onSave, produto }) =
     });
 
     if (!result.canceled) {
-      console.log("imagepicada: ", result.assets[0].uri);
       setImagemUrl(result.assets[0].uri);
     }
   };
@@ -119,21 +114,21 @@ const ProdutoForm: React.FC<Props> = ({ visible, onDismiss, onSave, produto }) =
                 mode="outlined"
                 label="Nome do Produto"
                 value={nome}
-                onChangeText={setNome}
+                onChangeText={(text) => setNome(text)}
                 style={styles.input}
               />
               <TextInput
                 mode="outlined"
                 label="Descrição"
                 value={descricao}
-                onChangeText={setDescricao}
+                onChangeText={(text) => setDescricao(text)}
                 style={styles.input}
               />
               <TextInput
                 mode="outlined"
                 label="Preço"
                 value={preco}
-                onChangeText={setPreco}
+                onChangeText={(text) => setPreco(text)}
                 keyboardType="numeric"
                 style={styles.input}
               />
@@ -141,14 +136,14 @@ const ProdutoForm: React.FC<Props> = ({ visible, onDismiss, onSave, produto }) =
                 mode="outlined"
                 label="Categoria"
                 value={categoria}
-                onChangeText={setCategoria}
+                onChangeText={(text) => setCategoria(text)}
                 style={styles.input}
               />
               <TextInput
                 mode="outlined"
                 label="Estoque"
                 value={estoque}
-                onChangeText={setEstoque}
+                onChangeText={(text) => setEstoque(text)}
                 keyboardType="numeric"
                 style={styles.input}
               />

@@ -1,72 +1,87 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, FlatList, Text, StatusBar } from 'react-native';
-import { FAB, Appbar, useTheme, Snackbar, ActivityIndicator, Button } from 'react-native-paper';
+import React, { useState } from 'react';
+import { StyleSheet, View, FlatList, Text, Alert } from 'react-native';
+import { Appbar, useTheme, Button } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCart } from '../contexts/CartContext';
 import ProdutoCard from '../components/ProdutoCard';
-import { Produto } from '../models/Produto';
+import { createPedido } from '../services/PedidosService';
 
 const CarrinhoScreen = () => {
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { cart, removeFromCart, clearCart } = useCart();
   const theme = useTheme();
 
-  const handleRemoveItem = (produto: Produto) => {
-    removeFromCart(produto.id!);
-    setSnackbarMessage(`${produto.nome} removido do carrinho.`);
-    setSnackbarVisible(true);
-  };
+  // Calcular o total do carrinho
+  const total = cart.reduce((sum, item) => sum + item.preco * item.quantidade, 0);
 
-  const handleClearCart = () => {
-    clearCart();
-    setSnackbarMessage('Carrinho esvaziado com sucesso.');
-    setSnackbarVisible(true);
+  const handleEnviarPedido = async () => {
+    if (cart.length === 0) {
+      Alert.alert('Carrinho vazio', 'Adicione produtos ao carrinho antes de enviar o pedido.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const pedido = {
+        produtos: cart.map((item) => ({ id: item.id!, quantidade: item.quantidade })),
+        status: 'Pendente',
+        total,
+        data: new Date(),
+      };
+
+      await createPedido(pedido); // Chama o serviço
+      Alert.alert('Sucesso', 'Pedido enviado com sucesso!');
+      clearCart(); // Limpa o carrinho
+    } catch (error) {
+      Alert.alert('Erro', 'Ocorreu um erro ao enviar o pedido. Tente novamente.');
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
-        <Appbar.Header>
-          <Appbar.Content title="Carrinho de Compras" titleStyle={{ color: theme.colors.onPrimary }} />
-        </Appbar.Header>
-        <View style={[styles.content, styles.container, { backgroundColor: theme.colors.background }]}>
-          {cart.length > 0 ? (
-            <FlatList
-              data={cart}
-              horizontal
-              keyExtractor={(item) => item.id!}
-              renderItem={({ item }) => (
-                <View style={styles.productContainer}>
-                  <ProdutoCard produto={item} quantidade={item.quantidade} isCardapio />
-                  <Button
-                    mode="contained"
-                    onPress={() => handleRemoveItem(item)}
-                    style={styles.button}
-                  >
-                    Remover do Carrinho
-                  </Button>
-                </View>
-              )}
-            />
-          ) : (
-            <View style={styles.emptyCart}>
-              <Text>Seu carrinho está vazio...</Text>
-            </View>
-          )}
-          <Button mode="contained" onPress={handleClearCart} style={styles.clearCartButton}>
-            Finalizar compra
-          </Button>
-        </View>
-      </SafeAreaView>
-      <Snackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        duration={3000}
-      >
-        {snackbarMessage}
-      </Snackbar>
-    </>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
+      <Appbar.Header>
+        <Appbar.Content title="Carrinho de Compras" titleStyle={{ color: theme.colors.onPrimary }} />
+      </Appbar.Header>
+      <View style={[styles.content, { backgroundColor: theme.colors.background }]}>
+        {cart.length > 0 ? (
+          <FlatList
+            horizontal
+            data={cart}
+            keyExtractor={(item) => item.id!}
+            renderItem={({ item }) => (
+              <View style={styles.productContainer}>
+                <ProdutoCard produto={item} quantidade={item.quantidade} isCardapio />
+                <Button
+                  mode="contained"
+                  onPress={() => removeFromCart(item.id!)}
+                  style={styles.button}
+                >
+                  Remover
+                </Button>
+              </View>
+            )}
+          />
+        ) : (
+          <View style={styles.emptyCart}>
+            <Text>Seu carrinho está vazio...</Text>
+          </View>
+        )}
+        <Text style={styles.totalText}>Total: R$ {total.toFixed(2)}</Text>
+        <Button
+          mode="contained"
+          onPress={handleEnviarPedido}
+          style={styles.clearCartButton}
+          disabled={isSubmitting}
+          loading={isSubmitting}
+        >
+          Enviar Pedido
+        </Button>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -75,8 +90,9 @@ const styles = StyleSheet.create({
   productContainer: { marginBottom: 16 },
   button: { marginTop: 8 },
   clearCartButton: { margin: 16 },
+  content: { flex: 1, padding: 16 },
   emptyCart: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  content: { borderTopLeftRadius: 16, borderTopRightRadius: 16, paddingTop: 10, paddingBottom: 10, justifyContent: 'center' },
+  totalText: { textAlign: 'center', fontSize: 18, marginVertical: 16, fontWeight: 'bold' },
 });
 
 export default CarrinhoScreen;

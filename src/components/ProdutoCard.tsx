@@ -51,6 +51,29 @@ const ProdutoCard: React.FC<Props> = ({ produto, quantidade, onEditPress, onDele
         <Text style={{ color: theme.colors.onPrimary, marginTop: 8 }}>
           Preço: R$ {produto.preco.toFixed(2)}
         </Text>
+        {!isCardapio ? 
+          <Text style={{ color: theme.colors.onPrimary, marginTop: 8 }}>
+            Categoria: {produto.categoria}
+          </Text>
+         : null}
+         {!isCardapio ? 
+          <View style={{flexDirection:'row', alignItems:'center'}}>
+            <Text style={{ color: theme.colors.onPrimary, marginTop: 8 }}>
+              Estoque: {produto.estoque}
+            </Text>
+            {produto.estoque <= 5 ? <IconButton
+                size={15}
+                iconColor={theme.colors.primary}
+                icon="alert"
+            /> : null}
+          </View>
+         : null}
+          {!isCardapio ? 
+          <Text style={{ color: theme.colors.onPrimary, marginTop: 8 }}>
+            Descrição: {produto.descricao}
+          </Text>
+          
+         : null}
         {quantidade && (
           <Text style={[styles.quantidade, { color: theme.colors.primary }]}>
             Quantidade: {quantidade}

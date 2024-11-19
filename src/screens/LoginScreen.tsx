@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { FAB, Appbar, useTheme, Snackbar, ActivityIndicator, Button, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCart } from '../contexts/CartContext';
-import ProdutoCard from '../components/ProdutoCard';
-import { Produto } from '../models/Produto';
 
 const LoginScreen = ({ navigation }: { navigation: any }) => {
     const [username, setUsername] = useState('');
@@ -15,7 +12,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
   
     const handleLogin = () => {
       if (username === 'admin' && password === 'admin') {
-        navigation.navigate('CadastroProdutosScreen');
+        navigation.navigate('AdminTabs');
       } else {
         setSnackbarMessage('Credenciais inválidas.');
         setSnackbarVisible(true);
@@ -23,7 +20,8 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
     };
   
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>      <Appbar.Header>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>      
+        <Appbar.Header>
           <Appbar.Content title="Login Administrador" titleStyle={{ color: theme.colors.onPrimary }} />
         </Appbar.Header>
         <View style={styles.loginContainer}>
